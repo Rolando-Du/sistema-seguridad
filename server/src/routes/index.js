@@ -6,6 +6,7 @@ const incidentRoutes = require("./incident.routes");
 const baseRoutes = require("./base.routes");
 const dashboardRoutes = require("./dashboard.routes");
 const reportRoutes = require("./report.routes");
+const routeRoutes = require("./route.routes");
 const testRoutes = require("./test.routes");
 
 const router = express.Router();
@@ -27,6 +28,7 @@ router.use("/incidents", incidentRoutes);
 router.use("/bases", baseRoutes);
 router.use("/dashboard", dashboardRoutes);
 router.use("/reports", reportRoutes);
+router.use("/routes", routeRoutes);
 router.use("/test", testRoutes);
 
 module.exports = router;
