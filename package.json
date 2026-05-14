@@ -1,0 +1,26 @@
+{
+  "name": "sistema-seguridad-nacional",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Sistema fullstack de gestión, análisis, auditoría y reportes de incidentes de seguridad",
+  "scripts": {
+    "dev": "pnpm --parallel --filter client --filter server dev",
+    "client:dev": "pnpm --filter client dev",
+    "server:dev": "pnpm --filter server dev",
+    "client:build": "pnpm --filter client build",
+    "server:start": "pnpm --filter server start"
+  },
+  "keywords": [
+    "react",
+    "vite",
+    "tailwindcss",
+    "node",
+    "express",
+    "postgresql",
+    "prisma",
+    "seguridad",
+    "incidentes"
+  ],
+  "author": "Rolando Duarte",
+  "license": "ISC"
+}

@@ -1,0 +1,140 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  OPERADOR
+  LECTOR
+}
+
+enum IncidentStatus {
+  PENDIENTE
+  EN_INVESTIGACION
+  RESUELTO
+  ARCHIVADO
+}
+
+enum BaseType {
+  COMISARIA
+  DESTACAMENTO
+  BASE_OPERATIVA
+  PUESTO_POLICIAL
+  OTRO
+}
+
+enum AuditAction {
+  LOGIN
+  CREAR
+  EDITAR
+  CAMBIAR_ESTADO
+  ELIMINAR
+  ACTIVAR
+  DESACTIVAR
+  EXPORTAR
+}
+
+enum AuditEntity {
+  AUTH
+  USUARIO
+  INCIDENTE
+  BASE_OPERATIVA
+}
+
+model User {
+  id              String    @id @default(uuid())
+  name            String
+  email           String    @unique
+  passwordHash    String
+  role            UserRole  @default(LECTOR)
+  active          Boolean   @default(true)
+  lastAccessAt    DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  incidentsCreated Incident[] @relation("IncidentCreatedBy")
+  auditLogs         AuditLog[]
+
+  @@map("users")
+}
+
+model Incident {
+  id                String         @id @default(uuid())
+  crimeType         String
+  description       String
+  incidentDate      DateTime
+  province          String
+  department        String?
+  city              String
+  neighborhood      String
+  address           String?
+  latitude          Float
+  longitude         Float
+  involvedGender    String?
+  ageRange          String?
+  status            IncidentStatus @default(PENDIENTE)
+  createdById       String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  createdBy User? @relation("IncidentCreatedBy", fields: [createdById], references: [id])
+
+  @@index([crimeType])
+  @@index([status])
+  @@index([province])
+  @@index([city])
+  @@index([neighborhood])
+  @@index([incidentDate])
+  @@map("incidents")
+}
+
+model OperationalBase {
+  id            String   @id @default(uuid())
+  name          String
+  address       String
+  province      String
+  department    String?
+  city          String
+  neighborhood  String
+  baseType      BaseType @default(BASE_OPERATIVA)
+  latitude      Float
+  longitude     Float
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([province])
+  @@index([city])
+  @@index([neighborhood])
+  @@index([active])
+  @@map("operational_bases")
+}
+
+model AuditLog {
+  id            String      @id @default(uuid())
+  userId        String?
+  userName      String?
+  userEmail     String?
+  userRole      UserRole?
+  action        AuditAction
+  entity        AuditEntity
+  entityId      String?
+  description   String
+  previousData  Json?
+  newData       Json?
+  ipAddress     String?
+  userAgent     String?
+  createdAt     DateTime    @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([entity])
+  @@index([createdAt])
+  @@map("audit_logs")
+}
