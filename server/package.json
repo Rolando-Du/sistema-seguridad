@@ -12,7 +12,9 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "seed": "node prisma/seed.js"
+    "seed": "node prisma/seed.js",
+    "build": "prisma migrate deploy",
+    "vercel-build": "prisma migrate deploy"
   },
   "keywords": [
     "node",
@@ -39,5 +41,9 @@
   },
   "devDependencies": {
     "prisma": "^7.8.0"
+  },
+  "packageManager": "pnpm@11.1.2",
+  "engines": {
+    "node": "22.x"
   }
 }
