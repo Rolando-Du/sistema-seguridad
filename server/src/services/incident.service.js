@@ -19,9 +19,13 @@ const normalizeOptionalText = (value) => {
 const normalizeStatus = (status = "PENDIENTE") => {
   const cleanStatus = normalizeText(status).toUpperCase();
 
+  if (!cleanStatus || cleanStatus === "TODOS") {
+    return "TODOS";
+  }
+
   if (!statusMap[cleanStatus]) {
     const error = new Error(
-      "Estado inválido. Valores permitidos: PENDIENTE, EN_INVESTIGACION, RESUELTO, ARCHIVADO."
+      "Estado inválido. Valores permitidos: TODOS, PENDIENTE, EN_INVESTIGACION, RESUELTO, ARCHIVADO."
     );
     error.statusCode = 400;
     throw error;
