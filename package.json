@@ -8,7 +8,10 @@
     "client:dev": "pnpm --filter client dev",
     "server:dev": "pnpm --filter server dev",
     "client:build": "pnpm --filter client build",
-    "server:start": "pnpm --filter server start"
+    "server:start": "pnpm --filter server start",
+    "server:prisma:generate": "pnpm --filter server prisma:generate",
+    "server:migrate:deploy": "pnpm --filter server prisma:migrate:deploy",
+    "server:seed": "pnpm --filter server seed"
   },
   "keywords": [
     "react",
