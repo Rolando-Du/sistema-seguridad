@@ -25,5 +25,9 @@
     "incidentes"
   ],
   "author": "Rolando Duarte",
-  "license": "ISC"
+  "license": "ISC",
+  "packageManager": "pnpm@11.1.2",
+  "engines": {
+    "node": "22.x"
+  }
 }
