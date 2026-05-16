@@ -21,9 +21,13 @@ const normalizeOptionalText = (value) => {
 const normalizeBaseType = (baseType = "BASE_OPERATIVA") => {
   const cleanBaseType = normalizeText(baseType).toUpperCase();
 
+  if (!cleanBaseType || cleanBaseType === "TODOS") {
+    return "TODOS";
+  }
+
   if (!baseTypeMap[cleanBaseType]) {
     const error = new Error(
-      "Tipo de base inválido. Valores permitidos: COMISARIA, DESTACAMENTO, BASE_OPERATIVA, PUESTO_POLICIAL, OTRO."
+      "Tipo de base inválido. Valores permitidos: TODOS, COMISARIA, DESTACAMENTO, BASE_OPERATIVA, PUESTO_POLICIAL, OTRO."
     );
     error.statusCode = 400;
     throw error;
