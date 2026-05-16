@@ -7,7 +7,7 @@ import {
   Search,
   TrendingUp,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -17,7 +17,6 @@ import {
   LineChart,
   Pie,
   PieChart,
-  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -89,6 +88,51 @@ const downloadCsvFile = (csvContent, filename = "reporte_operativo.csv") => {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+};
+
+
+const ChartFrame = ({ height = 320, children }) => {
+  const containerRef = useRef(null);
+  const [width, setWidth] = useState(0);
+
+  useLayoutEffect(() => {
+    const element = containerRef.current;
+
+    if (!element) return undefined;
+
+    const updateWidth = () => {
+      const nextWidth = Math.floor(element.getBoundingClientRect().width);
+
+      if (nextWidth > 0) {
+        setWidth(nextWidth);
+      }
+    };
+
+    updateWidth();
+
+    const resizeObserver = new ResizeObserver(updateWidth);
+    resizeObserver.observe(element);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      className="w-full min-w-0"
+      style={{ height }}
+    >
+      {width > 0 ? (
+        children({ width, height })
+      ) : (
+        <div className="flex h-full items-center justify-center rounded-xl border border-slate-800 bg-slate-950 text-xs font-bold uppercase tracking-widest text-slate-600">
+          Preparando gráfico...
+        </div>
+      )}
+    </div>
+  );
 };
 
 const Reports = () => {
@@ -439,9 +483,9 @@ const Reports = () => {
             Incidentes por tipo
           </h3>
 
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={chartData.byCrimeType}>
+          <ChartFrame height={320}>
+            {({ width, height }) => (
+              <BarChart width={width} height={height} data={chartData.byCrimeType}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                 <XAxis dataKey="name" stroke="#94a3b8" fontSize={11} />
                 <YAxis stroke="#94a3b8" fontSize={11} />
@@ -455,8 +499,8 @@ const Reports = () => {
                 />
                 <Bar dataKey="total" fill="#3b82f6" radius={[8, 8, 0, 0]} />
               </BarChart>
-            </ResponsiveContainer>
-          </div>
+            )}
+          </ChartFrame>
         </section>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
@@ -465,9 +509,9 @@ const Reports = () => {
             Evolución por fecha
           </h3>
 
-          <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData.byDate}>
+          <ChartFrame height={320}>
+            {({ width, height }) => (
+              <LineChart width={width} height={height} data={chartData.byDate}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                 <XAxis dataKey="date" stroke="#94a3b8" fontSize={11} />
                 <YAxis stroke="#94a3b8" fontSize={11} />
@@ -487,8 +531,8 @@ const Reports = () => {
                   dot={{ r: 4 }}
                 />
               </LineChart>
-            </ResponsiveContainer>
-          </div>
+            )}
+          </ChartFrame>
         </section>
       </div>
 
@@ -499,9 +543,9 @@ const Reports = () => {
             Estados
           </h3>
 
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
+          <ChartFrame height={288}>
+            {({ width, height }) => (
+              <PieChart width={width} height={height}>
                 <Pie
                   data={chartData.byStatus}
                   dataKey="total"
@@ -527,8 +571,8 @@ const Reports = () => {
                   }}
                 />
               </PieChart>
-            </ResponsiveContainer>
-          </div>
+            )}
+          </ChartFrame>
         </section>
 
         <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
