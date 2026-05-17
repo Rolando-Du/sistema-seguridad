@@ -151,7 +151,41 @@ const OperationalMap = () => {
   };
 
   useEffect(() => {
-    loadMapData();
+    let cancelled = false;
+
+    Promise.all([
+      getIncidents({
+        status: "TODOS",
+        limit: 500,
+      }),
+      getBases({
+        includeInactive: true,
+        baseType: "TODOS",
+      }),
+    ])
+      .then(([incidentResponse, baseResponse]) => {
+        if (cancelled) return;
+
+        setIncidents(incidentResponse.data || []);
+        setBases(baseResponse.data || []);
+      })
+      .catch((error) => {
+        if (cancelled) return;
+
+        setMessage({
+          text: error.message || "No se pudieron cargar los datos del mapa.",
+          type: "error",
+        });
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const handleSelectIncident = async (incident) => {
@@ -271,7 +305,7 @@ const OperationalMap = () => {
             </h3>
           </div>
 
-          <div className="h-[620px] bg-slate-950">
+          <div className="h-155 bg-slate-950">
             {loading ? (
               <div className="flex h-full items-center justify-center">
                 <div className="text-center">

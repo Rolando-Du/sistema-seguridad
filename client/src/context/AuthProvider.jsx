@@ -1,12 +1,11 @@
-import { createContext, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AuthContext } from "./AuthContextObject";
 import { getStoredUser, getToken } from "../services/apiClient";
 import {
   getProfileRequest,
   loginRequest,
   logoutRequest,
 } from "../services/authService";
-
-export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => getStoredUser());
@@ -20,9 +19,12 @@ export const AuthProvider = ({ children }) => {
       const storedToken = getToken();
 
       if (!storedToken) {
-        setUser(null);
-        setToken(null);
-        setLoadingAuth(false);
+        if (!cancelled) {
+          setUser(null);
+          setToken(null);
+          setLoadingAuth(false);
+        }
+
         return;
       }
 

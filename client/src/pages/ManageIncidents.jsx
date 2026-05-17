@@ -152,7 +152,44 @@ const ManageIncidents = () => {
   };
 
   useEffect(() => {
-    loadIncidents(initialFilters);
+    let cancelled = false;
+
+    getIncidents(initialFilters)
+      .then((response) => {
+        if (cancelled) return;
+
+        if (response.success) {
+          setIncidents(response.data || []);
+          setTotal(response.total || 0);
+          return;
+        }
+
+        setIncidents([]);
+        setTotal(0);
+        setMessage({
+          text: "No se pudieron cargar los incidentes.",
+          type: "error",
+        });
+      })
+      .catch((error) => {
+        if (cancelled) return;
+
+        setIncidents([]);
+        setTotal(0);
+        setMessage({
+          text: error.message || "Error al cargar incidentes.",
+          type: "error",
+        });
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const summary = useMemo(() => {
@@ -497,7 +534,7 @@ const ManageIncidents = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1100px] text-left text-sm">
+          <table className="w-full min-w-275 text-left text-sm">
             <thead className="bg-slate-950 text-[10px] uppercase tracking-widest text-slate-500">
               <tr>
                 <th className="px-4 py-3">Tipo</th>
@@ -636,7 +673,7 @@ const ManageIncidents = () => {
       </section>
 
       {detailOpen && selectedIncident && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
               <h3 className="text-xl font-black uppercase italic text-white">
@@ -705,7 +742,7 @@ const ManageIncidents = () => {
       )}
 
       {editOpen && selectedIncident && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
           <div className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
               <div>

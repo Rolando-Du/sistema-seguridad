@@ -568,7 +568,7 @@ const ManageBases = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1180px] text-left text-sm">
+          <table className="w-full min-w-295 text-left text-sm">
             <thead className="bg-slate-950 text-[10px] uppercase tracking-widest text-slate-500">
               <tr>
                 <th className="px-5 py-3">Dependencia</th>
@@ -597,7 +597,7 @@ const ManageBases = () => {
                     className="border-t border-slate-800 text-slate-300 hover:bg-slate-800/50"
                   >
                     <td className="px-5 py-5 align-middle">
-                      <div className="max-w-[360px]">
+                      <div className="max-w-90">
                         <p className="text-sm font-black uppercase leading-5 text-white">
                           {base.name}
                         </p>
@@ -612,7 +612,7 @@ const ManageBases = () => {
                     </td>
 
                     <td className="px-5 py-5 align-middle">
-                      <div className="max-w-[240px]">
+                      <div className="max-w-60">
                         <p className="font-black text-slate-100">{base.city}</p>
                         <p className="mt-1 text-xs leading-5 text-slate-500">
                           {base.neighborhood} · {base.department || "Sin depto."}
@@ -719,7 +719,7 @@ const ManageBases = () => {
       </section>
 
       {detailOpen && selectedBase && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
               <h3 className="text-xl font-black uppercase italic text-white">
@@ -788,7 +788,7 @@ const ManageBases = () => {
       )}
 
       {modalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
           <div className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
               <div>

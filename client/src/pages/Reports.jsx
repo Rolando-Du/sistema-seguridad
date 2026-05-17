@@ -174,11 +174,50 @@ const Reports = () => {
   };
 
   useEffect(() => {
-    loadReport(initialFilters);
+    let cancelled = false;
+
+    getOperationalReport(initialFilters)
+      .then((response) => {
+        if (cancelled) return;
+
+        if (response.success) {
+          setReport(response);
+          return;
+        }
+
+        setReport(null);
+        setMessage({
+          text: "No se pudo cargar el reporte operativo.",
+          type: "error",
+        });
+      })
+      .catch((error) => {
+        if (cancelled) return;
+
+        setReport(null);
+        setMessage({
+          text: error.message || "Error al cargar reportes.",
+          type: "error",
+        });
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const summary = report?.summary || {};
-  const data = report?.data || [];
+  const summary = useMemo(() => {
+    return report?.summary || {};
+  }, [report]);
+
+  const data = useMemo(() => {
+    return report?.data || [];
+  }, [report]);
 
   const chartData = useMemo(() => {
     return {
@@ -645,7 +684,7 @@ const Reports = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1050px] text-left text-sm">
+          <table className="w-full min-w-262.5 text-left text-sm">
             <thead className="bg-slate-950 text-[10px] uppercase tracking-widest text-slate-500">
               <tr>
                 <th className="px-4 py-3">Tipo</th>

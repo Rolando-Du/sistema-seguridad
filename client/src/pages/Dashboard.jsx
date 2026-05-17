@@ -71,7 +71,33 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    loadDashboard();
+    let cancelled = false;
+
+    getDashboardSummary()
+      .then((response) => {
+        if (cancelled) return;
+
+        if (response.success) {
+          setDashboard(response.data);
+          return;
+        }
+
+        setMessage("No se pudo cargar el dashboard.");
+      })
+      .catch((error) => {
+        if (cancelled) return;
+
+        setMessage(error.message || "Error al cargar el dashboard.");
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const usersByRole = useMemo(() => {

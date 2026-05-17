@@ -107,7 +107,41 @@ const ManageUsers = () => {
   };
 
   useEffect(() => {
-    loadUsers();
+    let cancelled = false;
+
+    getUsers()
+      .then((response) => {
+        if (cancelled) return;
+
+        if (response.success) {
+          setUsers(response.data || []);
+          return;
+        }
+
+        setUsers([]);
+        setMessage({
+          text: "No se pudieron cargar los usuarios.",
+          type: "error",
+        });
+      })
+      .catch((error) => {
+        if (cancelled) return;
+
+        setUsers([]);
+        setMessage({
+          text: error.message || "Error al cargar usuarios.",
+          type: "error",
+        });
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const filteredUsers = useMemo(() => {
@@ -420,7 +454,7 @@ const ManageUsers = () => {
 
       <section className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1000px] text-left text-sm">
+          <table className="w-full min-w-250 text-left text-sm">
             <thead className="bg-slate-950 text-[10px] uppercase tracking-widest text-slate-500">
               <tr>
                 <th className="px-4 py-3">Usuario</th>
@@ -531,7 +565,7 @@ const ManageUsers = () => {
       </section>
 
       {modalOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
           <div className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
               <div>

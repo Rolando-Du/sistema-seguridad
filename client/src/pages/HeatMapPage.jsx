@@ -159,7 +159,41 @@ const HeatMapPage = () => {
   };
 
   useEffect(() => {
-    loadIncidents(initialFilters);
+    let cancelled = false;
+
+    getIncidents(initialFilters)
+      .then((response) => {
+        if (cancelled) return;
+
+        if (response.success) {
+          setIncidents(response.data || []);
+          return;
+        }
+
+        setIncidents([]);
+        setMessage({
+          text: "No se pudieron cargar los incidentes del mapa de calor.",
+          type: "error",
+        });
+      })
+      .catch((error) => {
+        if (cancelled) return;
+
+        setIncidents([]);
+        setMessage({
+          text: error.message || "No se pudieron cargar los incidentes.",
+          type: "error",
+        });
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const heatPoints = useMemo(() => {
@@ -435,7 +469,7 @@ const HeatMapPage = () => {
             </h3>
           </div>
 
-          <div className="h-[650px] bg-slate-950">
+          <div className="h-162.5 bg-slate-950">
             {loading ? (
               <div className="flex h-full items-center justify-center">
                 <div className="text-center">

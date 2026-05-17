@@ -136,7 +136,44 @@ const Audit = () => {
   };
 
   useEffect(() => {
-    loadAuditLogs(initialFilters);
+    let cancelled = false;
+
+    getAuditLogs(initialFilters)
+      .then((response) => {
+        if (cancelled) return;
+
+        if (response.success) {
+          setAuditLogs(response.data || []);
+          setTotal(response.total || 0);
+          return;
+        }
+
+        setAuditLogs([]);
+        setTotal(0);
+        setMessage({
+          text: "No se pudo cargar la auditoría.",
+          type: "error",
+        });
+      })
+      .catch((error) => {
+        if (cancelled) return;
+
+        setAuditLogs([]);
+        setTotal(0);
+        setMessage({
+          text: error.message || "Error al cargar auditoría.",
+          type: "error",
+        });
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const summary = useMemo(() => {
@@ -360,7 +397,7 @@ const Audit = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1150px] text-left text-sm">
+          <table className="w-full min-w-287.5 text-left text-sm">
             <thead className="bg-slate-950 text-[10px] uppercase tracking-widest text-slate-500">
               <tr>
                 <th className="px-4 py-3">Acción</th>
@@ -474,7 +511,7 @@ const Audit = () => {
       </section>
 
       {detailOpen && selectedLog && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-black/70 px-4 py-8 backdrop-blur-sm">
           <div className="max-h-[90vh] w-full max-w-5xl overflow-y-auto rounded-2xl border border-slate-800 bg-slate-900 shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
               <div className="flex items-center gap-3">
@@ -519,7 +556,7 @@ const Audit = () => {
                     <p className="text-[9px] font-bold uppercase tracking-widest text-slate-600">
                       {label}
                     </p>
-                    <p className="mt-2 break-words text-sm font-bold text-slate-200">
+                    <p className="mt-2 wrap-break-word text-sm font-bold text-slate-200">
                       {value}
                     </p>
                   </div>
