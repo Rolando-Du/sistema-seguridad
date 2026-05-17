@@ -13,8 +13,8 @@ const Login = () => {
   const [message, setMessage] = useState("");
 
   const [formData, setFormData] = useState({
-    email: "admin@seguridad.com",
-    password: "Admin123",
+    email: "",
+    password: "",
   });
 
   const from = location.state?.from?.pathname || "/";
@@ -84,7 +84,7 @@ const Login = () => {
               required
               autoComplete="email"
               className="h-12 rounded-lg border border-slate-700 bg-slate-950 px-4 text-sm text-white outline-none transition-all placeholder:text-slate-700 focus:border-blue-500"
-              placeholder="admin@seguridad.com"
+              placeholder="Ingrese su email"
             />
           </div>
 
@@ -109,7 +109,9 @@ const Login = () => {
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-slate-500 transition-colors hover:bg-slate-800 hover:text-white"
-                aria-label={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
+                aria-label={
+                  showPassword ? "Ocultar contraseña" : "Ver contraseña"
+                }
               >
                 {showPassword ? (
                   <EyeOff className="h-5 w-5" />
