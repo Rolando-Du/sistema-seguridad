@@ -18,7 +18,8 @@
     "seed:bases": "node prisma/seed-operational-bases.js",
     "seed:bases:fix": "node prisma/seed-operational-bases-corrections.js",
     "seed:police-extra": "node prisma/seed-police-extra-points.js",
-    "seed:bases:maps": "node prisma/seed-operational-bases-maps-validated.js"
+    "seed:bases:maps": "node prisma/seed-operational-bases-maps-validated.js",
+    "seed:incidents": "node prisma/seed-demo-incidents.js"
   },
   "keywords": [
     "node",
