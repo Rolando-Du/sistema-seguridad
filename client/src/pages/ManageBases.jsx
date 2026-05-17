@@ -1,6 +1,7 @@
 import {
   Building2,
   Eye,
+  ExternalLink,
   MapPin,
   Pencil,
   Plus,
@@ -65,6 +66,17 @@ const formatDateTime = (date) => {
     hour: "2-digit",
     minute: "2-digit",
   });
+};
+
+const buildGoogleMapsUrl = (base) => {
+  const latitude = Number(base?.latitude);
+  const longitude = Number(base?.longitude);
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return null;
+  }
+
+  return `https://www.google.com/maps?q=${latitude},${longitude}`;
 };
 
 const buildFormFromBase = (base) => ({
@@ -645,6 +657,18 @@ const ManageBases = () => {
                           <Eye className="h-4 w-4" />
                         </button>
 
+                        {buildGoogleMapsUrl(base) && (
+                          <a
+                            href={buildGoogleMapsUrl(base)}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="rounded-lg border border-slate-700 bg-slate-950 p-2 text-slate-300 hover:border-green-500 hover:text-green-400"
+                            title="Abrir en Google Maps"
+                          >
+                            <ExternalLink className="h-4 w-4" />
+                          </a>
+                        )}
+
                         <button
                           type="button"
                           onClick={() => openEditModal(base)}
@@ -720,6 +744,18 @@ const ManageBases = () => {
                 <p className="mt-2 text-sm text-slate-400">
                   {selectedBase.address}
                 </p>
+
+                {buildGoogleMapsUrl(selectedBase) && (
+                  <a
+                    href={buildGoogleMapsUrl(selectedBase)}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-4 inline-flex items-center justify-center gap-2 rounded-lg border border-green-500/40 bg-green-500/10 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-green-300 transition-all hover:bg-green-500 hover:text-white"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Abrir ubicación en Google Maps
+                  </a>
+                )}
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
