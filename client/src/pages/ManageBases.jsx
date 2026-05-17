@@ -17,6 +17,7 @@ import {
   updateBase,
   updateBaseStatus,
 } from "../services/baseService";
+import BaseTypeBadge from "../components/features/bases/BaseTypeBadge";
 
 const initialFilters = {
   includeInactive: true,
@@ -53,13 +54,6 @@ const editableBaseTypeOptions = baseTypeOptions.filter(
   (baseType) => baseType.value !== "TODOS",
 );
 
-const baseTypeLabel = {
-  COMISARIA: "Comisaría",
-  DESTACAMENTO: "Destacamento",
-  BASE_OPERATIVA: "Base Operativa",
-  PUESTO_POLICIAL: "Puesto Policial",
-  OTRO: "Otro",
-};
 
 const formatDateTime = (date) => {
   if (!date) return "Sin fecha";
@@ -135,7 +129,44 @@ const ManageBases = () => {
   };
 
   useEffect(() => {
-    loadBases(initialFilters);
+    let cancelled = false;
+
+    getBases(initialFilters)
+      .then((response) => {
+        if (cancelled) return;
+
+        if (response.success) {
+          setBases(response.data || []);
+          setTotal(response.total || 0);
+          return;
+        }
+
+        setBases([]);
+        setTotal(0);
+        setMessage({
+          text: "No se pudieron cargar las bases operativas.",
+          type: "error",
+        });
+      })
+      .catch((error) => {
+        if (cancelled) return;
+
+        setBases([]);
+        setTotal(0);
+        setMessage({
+          text: error.message || "Error al cargar bases operativas.",
+          type: "error",
+        });
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const summary = useMemo(() => {
@@ -525,15 +556,15 @@ const ManageBases = () => {
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[1050px] text-left text-sm">
+          <table className="w-full min-w-[1180px] text-left text-sm">
             <thead className="bg-slate-950 text-[10px] uppercase tracking-widest text-slate-500">
               <tr>
-                <th className="px-4 py-3">Base</th>
-                <th className="px-4 py-3">Tipo</th>
-                <th className="px-4 py-3">Ubicación</th>
-                <th className="px-4 py-3">Coordenadas</th>
-                <th className="px-4 py-3">Estado</th>
-                <th className="px-4 py-3 text-right">Acciones</th>
+                <th className="px-5 py-3">Dependencia</th>
+                <th className="px-5 py-3">Tipo</th>
+                <th className="px-5 py-3">Ubicación</th>
+                <th className="px-5 py-3">Coordenadas</th>
+                <th className="px-5 py-3">Estado</th>
+                <th className="px-5 py-3 text-right">Acciones</th>
               </tr>
             </thead>
 
@@ -553,36 +584,45 @@ const ManageBases = () => {
                     key={base.id}
                     className="border-t border-slate-800 text-slate-300 hover:bg-slate-800/50"
                   >
-                    <td className="px-4 py-4">
-                      <p className="font-black uppercase text-white">
-                        {base.name}
-                      </p>
-                      <p className="mt-1 text-xs text-slate-500">
-                        {base.address}
-                      </p>
+                    <td className="px-5 py-5 align-middle">
+                      <div className="max-w-[360px]">
+                        <p className="text-sm font-black uppercase leading-5 text-white">
+                          {base.name}
+                        </p>
+                        <p className="mt-1.5 line-clamp-2 text-xs leading-5 text-slate-500">
+                          {base.address}
+                        </p>
+                      </div>
                     </td>
 
-                    <td className="px-4 py-4">
-                      <span className="rounded-full border border-blue-500/40 bg-blue-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-blue-300">
-                        {baseTypeLabel[base.baseType] || base.baseType}
-                      </span>
+                    <td className="px-5 py-5 align-middle">
+                      <BaseTypeBadge type={base.baseType} />
                     </td>
 
-                    <td className="px-4 py-4">
-                      <p className="font-bold text-slate-200">{base.city}</p>
-                      <p className="text-xs text-slate-500">
-                        {base.neighborhood} · {base.department || "Sin depto."} ·{" "}
-                        {base.province}
-                      </p>
+                    <td className="px-5 py-5 align-middle">
+                      <div className="max-w-[240px]">
+                        <p className="font-black text-slate-100">{base.city}</p>
+                        <p className="mt-1 text-xs leading-5 text-slate-500">
+                          {base.neighborhood} · {base.department || "Sin depto."}
+                        </p>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-600">
+                          {base.province}
+                        </p>
+                      </div>
                     </td>
 
-                    <td className="px-4 py-4">
-                      <p className="font-mono text-xs text-slate-300">
-                        {base.latitude}, {base.longitude}
-                      </p>
+                    <td className="px-5 py-5 align-middle">
+                      <div className="rounded-lg border border-slate-800 bg-slate-950 px-3 py-2">
+                        <p className="font-mono text-[11px] font-bold text-slate-300">
+                          {Number(base.latitude).toFixed(5)}
+                        </p>
+                        <p className="font-mono text-[11px] font-bold text-slate-500">
+                          {Number(base.longitude).toFixed(5)}
+                        </p>
+                      </div>
                     </td>
 
-                    <td className="px-4 py-4">
+                    <td className="px-5 py-5 align-middle">
                       <span
                         className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-widest ${
                           base.active
@@ -594,7 +634,7 @@ const ManageBases = () => {
                       </span>
                     </td>
 
-                    <td className="px-4 py-4">
+                    <td className="px-5 py-5 align-middle">
                       <div className="flex justify-end gap-2">
                         <button
                           type="button"
@@ -673,9 +713,7 @@ const ManageBases = () => {
 
             <div className="space-y-4 p-6">
               <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-blue-400">
-                  {baseTypeLabel[selectedBase.baseType] || selectedBase.baseType}
-                </p>
+                <BaseTypeBadge type={selectedBase.baseType} />
                 <p className="mt-3 text-xl font-black uppercase text-white">
                   {selectedBase.name}
                 </p>
